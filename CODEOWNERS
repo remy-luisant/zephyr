@@ -365,6 +365,7 @@
 /drivers/timer/altera_avalon_timer_hal.c  @nashif
 /drivers/timer/riscv_machine_timer.c      @kgugala @pgielda
 /drivers/timer/ite_it8xxx2_timer.c        @ite
+/drivers/timer/mips_cp0_timer.c           @frantony
 /drivers/timer/xlnx_psttc_timer*          @wjliang @stephanosio
 /drivers/timer/cc13x2_cc26x2_rtc_timer.c  @vanti
 /drivers/timer/cavs_timer.c               @dcpleung
