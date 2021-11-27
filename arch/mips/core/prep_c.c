@@ -57,6 +57,10 @@ void _PrepC(void)
 {
 	z_bss_zero();
 
+	if (IS_ENABLED(CONFIG_XIP)) {
+		z_data_copy();
+	}
+
 	interrupt_init();
 
 	z_cstart();

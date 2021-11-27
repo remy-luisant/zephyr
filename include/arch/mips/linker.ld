@@ -16,21 +16,27 @@
 #include <linker/linker-defs.h>
 #include <linker/linker-tool.h>
 
-#define ROMABLE_REGION              RAM
 #define RAMABLE_REGION              RAM
+
+#if defined(CONFIG_XIP)
+    #define ROMABLE_REGION              FLASH
+#else
+    #define ROMABLE_REGION              RAM
+#endif
 
 MEMORY
 {
     RAM (rwx) : ORIGIN = CONFIG_SRAM_BASE_ADDRESS, LENGTH = KB(CONFIG_SRAM_SIZE)
+    FLASH (rx) : ORIGIN = CONFIG_FLASH_BASE_ADDRESS, LENGTH = KB(CONFIG_FLASH_SIZE)
     /* Used by and documented in include/linker/intlist.ld */
     IDT_LIST  (wx)      : ORIGIN = 0xFFFFF7FF, LENGTH = 2K
 }
 
-REGION_ALIAS("REGION_TEXT", RAM);
-REGION_ALIAS("REGION_RODATA", RAM);
-REGION_ALIAS("REGION_DATA_VMA", RAM);
-REGION_ALIAS("REGION_DATA_LMA", RAM);
-REGION_ALIAS("REGION_BSS", RAM);
+REGION_ALIAS("REGION_TEXT", ROMABLE_REGION);
+REGION_ALIAS("REGION_RODATA", ROMABLE_REGION);
+REGION_ALIAS("REGION_DATA_LMA", ROMABLE_REGION);
+REGION_ALIAS("REGION_DATA_VMA", RAMABLE_REGION);
+REGION_ALIAS("REGION_BSS", RAMABLE_REGION);
 
 ENTRY(CONFIG_KERNEL_ENTRY)
 
@@ -91,13 +97,16 @@ SECTIONS
 		 . = ALIGN(8);
 		 _image_ram_start = .;
 		 __data_ram_start = .;
+		 __data_region_start = .;
 
 		 *(.data)
 		 *(.data.*)
 		 *(.gnu.linkonce.d.*)
 		 *(.sdata)
 		 *(.sdata.*)
+
 		 . = ALIGN(8);
+
 		SORT(CONSTRUCTORS)
 
 /* Located in generated directory. This file is populated by the
@@ -120,6 +129,9 @@ SECTIONS
 #include <snippets-data-sections.ld>
 
     __data_ram_end = .;
+    __data_region_end = .;
+
+    __data_region_load_start = LOADADDR(_DATA_SECTION_NAME);
 
     SECTION_DATA_PROLOGUE(_BSS_SECTION_NAME,(NOLOAD),)
 	{

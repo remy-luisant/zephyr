@@ -14,6 +14,7 @@
 
 	chosen {
 		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
 		zephyr,console = &uart2;
 		zephyr,shell-uart = &uart2;
 	};
@@ -35,10 +36,15 @@
 		};
 	};
 
-	sram0: memory@80200000 {
+	sram0: memory@80280000 {
 		device_type = "memory";
 		compatible = "mmio-sram";
-		reg = <0x80200000 0x100000>;
+		reg = <0x80280000 0x80000>;
+	};
+
+	flash0: memory@80200000 {
+		compatible = "soc-nv-flash", "mmio-sram";
+		reg = <0x80200000 0x80000>;
 	};
 
 	uart2: serial@bf000900 {
